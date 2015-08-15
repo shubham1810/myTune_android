@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText searchText;
     ListView searchResults;
 
-    public static String API = "http://192.168.43.21:8080";
+    public static String API = "http://128.199.128.227:8198/";
 
     JSONAdapter mJSONAdapter;
 
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Toast.makeText(getApplicationContext(), searchString, Toast.LENGTH_LONG).show();
 
         // Here goes the method to get the data from the server
-        String API = "http://192.168.43.21:8080";
+        String API = "http://128.199.128.227:8198/";
 
         RestAdapter restAdapter = new RestAdapter.Builder().setLogLevel(RestAdapter.LogLevel.FULL).
                 setEndpoint(API).build();
