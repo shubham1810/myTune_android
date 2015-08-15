@@ -1,12 +1,12 @@
 package com.shubhamdokania.mytune.API;
 
+import com.shubhamdokania.mytune.model.EmptyData;
 import com.shubhamdokania.mytune.model.SearchResults;
 
 import retrofit.Callback;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
-
 
 public interface gitapi {
     @GET("/users/{user}")      //here is the other url part.best way is to start using /
@@ -15,4 +15,7 @@ public interface gitapi {
 
     @GET("/api/search")
     public void getFeed(@Query("query") String q, Callback<SearchResults> response);
+
+    @GET("/api/download")
+    public void getLink(@Query("id") String id, @Query("name") String name, Callback<EmptyData> response);
 }
