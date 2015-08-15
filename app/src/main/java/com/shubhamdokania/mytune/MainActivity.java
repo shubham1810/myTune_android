@@ -2,7 +2,6 @@ package com.shubhamdokania.mytune;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,10 +11,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.json.JSONObject;
+import com.shubhamdokania.mytune.API.gitapi;
+import com.shubhamdokania.mytune.model.SearchResults;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
@@ -30,38 +32,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void searchForMusic(String searchString) {
         Toast.makeText(getApplicationContext(), searchString, Toast.LENGTH_LONG).show();
 
-        String urlString = "";
+        // Here goes the method to get the data from the server
+        String API = "http://192.168.43.21:8080";
 
-        try {
-            urlString = URLEncoder.encode(searchString, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
+        RestAdapter restAdapter = new RestAdapter.Builder().setLogLevel(RestAdapter.LogLevel.FULL).
+                setEndpoint(API).build();
 
-        AsyncHttpClient client = new AsyncHttpClient();
+        gitapi git = restAdapter.create(gitapi.class);
 
-        client.get(QUERY_URL + urlString,
-                new JsonHttpResponseHandler() {
+        git.getFeed(searchString, new Callback<SearchResults>() {
+            @Override
+            public void success(SearchResults searchResults, Response response) {
+                //Log.d("SOmetihng is bothering me", "======" + response.getStatus());
+                mJSONAdapter.updateData(searchResults.getData());
+            }
 
-                    @Override
-                    public void onSuccess(JSONObject jsonObject) {
-                        //Method for success call
-                        Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_LONG).show();
-
-                        //Log.d("Getting something!", jsonObject.toString());
-                        mJSONAdapter.updateData(jsonObject.optJSONArray("docs"));
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Throwable throwable, JSONObject error) {
-                        Toast.makeText(getApplicationContext(), "Error: " + statusCode + " " + throwable.getMessage(),
-                                Toast.LENGTH_LONG).show();
-
-                        Log.e("error occurred!", statusCode + " " + throwable.getMessage());
-                    }
-
-                });
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(getApplicationContext(), "SomeError", Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
@@ -79,7 +69,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         searchResults.setOnItemClickListener(this);
 
-
+        mJSONAdapter = new JSONAdapter(this, getLayoutInflater());
+        searchResults.setAdapter(mJSONAdapter);
     }
 
     @Override

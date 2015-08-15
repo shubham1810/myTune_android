@@ -8,10 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.shubhamdokania.mytune.model.Datum;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by shubham on 15/8/15.
@@ -22,22 +23,24 @@ public class JSONAdapter extends BaseAdapter {
 
     Context mContext;
     LayoutInflater mInflater;
-    JSONArray mJsonArray;
+    List<Datum> mdata;
 
     public JSONAdapter(Context context, LayoutInflater inflater) {
         mContext = context;
         mInflater = inflater;
-        mJsonArray = new JSONArray();
+        mdata = new ArrayList<Datum>();
     }
 
     @Override
     public int getCount() {
-        return mJsonArray.length();
+        return mdata.size();
+        //return mJsonArray.length();
     }
 
     @Override
     public Object getItem(int position) {
-        return mJsonArray.optJSONObject(position);
+        return mdata.get(position);
+        //return mJsonArray.optJSONObject(position);
     }
 
     @Override
@@ -63,10 +66,10 @@ public class JSONAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        JSONObject jsonObject = (JSONObject) getItem(position);
+        Datum dataObject = (Datum) getItem(position);
 
-        if (jsonObject.has("cover_i")) {
-            String imageID = jsonObject.optString("cover_i");
+        /*if (jsonObject.has("image")) {
+            String imageID = jsonObject.optString("image");
 
             String imageURL = IMAGE_BASE_URL + imageID + "-S.jpg";
 
@@ -74,15 +77,11 @@ public class JSONAdapter extends BaseAdapter {
         }
         else {
             holder.thumbnailImageView.setImageResource(R.drawable.ic_books);
-        }
+        }*/
 
-        String bookTitle = "";
+        Picasso.with(mContext).load(dataObject.getImage()).placeholder(R.drawable.ic_books).into(holder.thumbnailImageView);
 
-        if (jsonObject.has("title")) {
-            bookTitle = jsonObject.optString("title");
-        }
-
-        holder.titleTextView.setText(bookTitle);
+        holder.titleTextView.setText(dataObject.getName());
 
         return convertView;
     }
@@ -92,8 +91,12 @@ public class JSONAdapter extends BaseAdapter {
         public TextView titleTextView;
     }
 
-    public void updateData(JSONArray jsonArray) {
-        mJsonArray = jsonArray;
+    public void updateData(List<Datum> vals) {
+
+        mdata = vals;
+        /*for( Datum s : data ) {
+            Log.d("SOMETHING", s.getName());
+        }*/
         notifyDataSetChanged();
     }
 
